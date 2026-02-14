@@ -34,12 +34,17 @@ _stability_history: dict[str, list[int]] = {}
 
 @app.on_event("startup")
 def startup():
-    init_db()
-    logger.info("Database initialized")
+    try:
+        init_db()
+        logger.info("Database initialized")
+    except Exception as e:
+        logger.error(f"Database init failed (will retry on first request): {e}")
 
 
 @app.get("/health")
 def health():
+    """Health check — always returns ok so Railway doesn't kill the container.
+    Database connectivity is checked separately by the endpoints that need it."""
     return {"status": "ok"}
 
 
