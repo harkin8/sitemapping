@@ -128,9 +128,9 @@ def clay_webhook(payload: ClayWebhookPayload):
         cur.execute(
             "INSERT INTO enriched_people "
             "(campaign_id, account_name, account_id, first_name, last_name, "
-            "full_name, job_title, persona, company_domain, domain, "
+            "full_name, job_title, persona, persona_score, company_domain, domain, "
             "linkedin_profile, enrich_person, final_location, raw_payload) "
-            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             (
                 payload.campaign_id,
                 payload.account_name,
@@ -140,6 +140,7 @@ def clay_webhook(payload: ClayWebhookPayload):
                 payload.full_name,
                 payload.job_title,
                 payload.persona,
+                payload.persona_score,
                 payload.company_domain,
                 payload.domain,
                 payload.linkedin_profile,

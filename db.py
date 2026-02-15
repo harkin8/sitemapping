@@ -60,6 +60,7 @@ def init_db():
                 full_name       TEXT,
                 job_title       TEXT,
                 persona         TEXT,
+                persona_score   TEXT,
                 company_domain  TEXT,
                 domain          TEXT,
                 linkedin_profile TEXT,
@@ -70,4 +71,8 @@ def init_db():
             );
             CREATE INDEX IF NOT EXISTS idx_campaign
                 ON enriched_people(campaign_id);
+
+            -- Migration: add persona_score if missing
+            ALTER TABLE enriched_people
+                ADD COLUMN IF NOT EXISTS persona_score TEXT;
         """)

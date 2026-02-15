@@ -43,6 +43,7 @@ class ClayWebhookPayload(BaseModel):
     full_name: Optional[str] = None
     job_title: Optional[str] = None
     persona: Optional[str] = None
+    persona_score: Optional[str] = None
     company_domain: Optional[str] = None
     domain: Optional[str] = None
     linkedin_profile: Optional[str] = None

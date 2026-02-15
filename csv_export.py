@@ -35,6 +35,7 @@ CSV_COLUMNS = [
     "Full Name.",
     "Job Title",
     "Persona",
+    "Persona Score",
     "Company Domain",
     "Domain",
     "LinkedIn Profile",
@@ -49,7 +50,7 @@ def export_campaign_csv(campaign_id: str) -> str:
         cur = conn.cursor()
         cur.execute(
             "SELECT account_name, account_id, first_name, last_name, "
-            "full_name, job_title, persona, company_domain, domain, "
+            "full_name, job_title, persona, persona_score, company_domain, domain, "
             "linkedin_profile, enrich_person, final_location "
             "FROM enriched_people "
             "WHERE campaign_id = %s "
@@ -73,6 +74,7 @@ def export_campaign_csv(campaign_id: str) -> str:
             row["full_name"] or "",
             row["job_title"] or "",
             row["persona"] or "",
+            row["persona_score"] or "",
             row["company_domain"] or "",
             row["domain"] or row["company_domain"] or "",  # fallback
             row["linkedin_profile"] or "",
