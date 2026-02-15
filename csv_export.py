@@ -1,24 +1,4 @@
-"""CSV column mapping & generation for /mapping format.
-
-Produces CSV matching the exact format of:
-~/locations and contacts/People List.csv
-
-Column order:
-  "Find people" (empty)
-  "Rows from: ..." (empty)
-  "Account Name"
-  "Account ID"
-  "First Name"
-  "Last Name"
-  "Full Name."      (note trailing dot)
-  "Job Title"
-  "Persona"
-  "Company Domain"
-  "Domain"
-  "LinkedIn Profile"
-  "Enrich person"
-  "Final Location"
-"""
+"""CSV column mapping & generation for People List export."""
 
 import csv
 import io
@@ -26,13 +6,11 @@ import io
 from db import get_db
 
 CSV_COLUMNS = [
-    "Find people",
-    "Rows from: Campaign Export",
     "Account Name",
     "Account ID",
     "First Name",
     "Last Name",
-    "Full Name.",
+    "Full Name",
     "Job Title",
     "Persona",
     "Persona Score",
@@ -65,8 +43,6 @@ def export_campaign_csv(campaign_id: str) -> str:
 
     for row in rows:
         writer.writerow([
-            "",  # Find people
-            "",  # Rows from
             row["account_name"] or "",
             row["account_id"] or "",
             row["first_name"] or "",
