@@ -30,8 +30,9 @@ class CampaignStatus(BaseModel):
     status: str
     account_count: int
     accounts_sent: int
+    accounts_with_people: int
     enriched_people_count: int
-    stable: bool  # True if count hasn't changed in 3 consecutive polls
+    stable: bool  # True if all accounts covered AND count stabilized
 
 
 class ClayWebhookPayload(BaseModel):

@@ -195,6 +195,14 @@ def campaign_status(campaign_id: str):
         )
         people_count = cur.fetchone()["cnt"]
 
+        # Count how many unique accounts have at least 1 enriched person
+        cur.execute(
+            "SELECT COUNT(DISTINCT account_name) as cnt FROM enriched_people "
+            "WHERE campaign_id = %s",
+            (campaign_id,),
+        )
+        accounts_with_people = cur.fetchone()["cnt"]
+
     # Stability tracking
     history = _stability_history.setdefault(campaign_id, [])
     history.append(people_count)
@@ -202,12 +210,21 @@ def campaign_status(campaign_id: str):
     if len(history) > 5:
         history.pop(0)
 
-    # Stable if last 3 counts are identical and > 0
-    stable = (
+    # Count is stable if last 3 polls are identical and > 0
+    count_stable = (
         len(history) >= 3
         and people_count > 0
         and history[-1] == history[-2] == history[-3]
     )
+
+    # All accounts covered: every sent account has at least 1 person
+    all_accounts_covered = (
+        accounts_sent > 0
+        and accounts_with_people >= accounts_sent
+    )
+
+    # Ready when BOTH: all accounts have people AND count has stabilized
+    stable = count_stable and all_accounts_covered
 
     # Auto-update status to ready when stable
     if stable and campaign["status"] == "enriching":
@@ -226,6 +243,7 @@ def campaign_status(campaign_id: str):
         status=campaign["status"],
         account_count=account_count,
         accounts_sent=accounts_sent,
+        accounts_with_people=accounts_with_people,
         enriched_people_count=people_count,
         stable=stable,
     )
