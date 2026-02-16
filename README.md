@@ -1,16 +1,83 @@
 # Sitemapping
 
-End-to-end account targeting pipeline for Claude Code. Takes a list of accounts, extracts facility locations, enriches people via Clay, matches people to locations, and outputs a capped lead list.
+End-to-end account targeting pipeline for Claude Code. Takes a list of target accounts, finds their manufacturing facility locations, enriches people via Clay, matches people to nearby facilities, and outputs a capped lead list ready for outreach.
 
 ![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-blue) ![License](https://img.shields.io/badge/License-Private-gray)
+
+## How It Works
+
+The pipeline runs in 5 phases, fully orchestrated by Claude Code:
+
+```
+Accounts CSV
+    │
+    ▼
+Phase 1: Extract Locations
+    Claude researches each account's manufacturing/production
+    facilities using web search, company websites, and Google
+    Places API. Outputs a location CSV per account.
+    │
+    ▼
+Phase 2: Import to Clay
+    Accounts are pushed to Clay for LinkedIn enrichment.
+    Clay finds relevant people (ops, maintenance, engineering)
+    and enriches with job titles, personas, and contact info.
+    │
+    ▼
+Phase 3: Poll for Enrichment
+    Automatically polls until Clay finishes processing.
+    │
+    ▼
+Phase 4: Export & Review
+    Downloads the enriched people list and shows a per-account
+    breakdown. You choose lead cap and prioritization method.
+    │
+    ▼
+Phase 5: Match & Cap
+    Matches each person's location to the nearest facility,
+    filters to matched leads only, and caps at your chosen
+    limit per location using seniority + persona scoring.
+    │
+    ▼
+ Capped List (final output)
+```
+
+### Location Extraction (`/sites`)
+
+For each account, Claude classifies the company into one of four scenarios:
+
+- **Scenario A** — Locations listed on a single page (direct extraction)
+- **Scenario B** — Locations behind an interactive map (headless browser)
+- **Scenario C** — No centralized list (Google Places API search by company name)
+- **Scenario D** — Partial data on site + Places API to fill gaps
+
+### People-to-Location Matching (`/mapping`)
+
+Each person's city/state is matched against facility locations for their account:
+
+- **Exact match** — city and state both match
+- **Fuzzy match** — close city name + state match
+- **State-only match** — only used when one facility in that state
+- **No match** — filtered out of the final list
+
+### Lead Capping
+
+Locations with more people than the cap are trimmed using seniority priority:
+
+1. **Tier 1** — Director+ titles with a target persona
+2. **Tier 2A** — Plant Manager / General Manager
+3. **Tier 2B** — Manager (any)
+4. **Tier 2C** — All others
+
+Within each tier, leads are ranked by persona relevance score.
 
 ## Skills
 
 | Skill | Description |
 |-------|-------------|
-| `/sitemapping` | Full pipeline orchestrator — accounts to capped list |
-| `/sites` | Extract manufacturing facility locations for a company |
-| `/mapping` | Match people to facility locations and build ATL |
+| `/sitemapping` | Full pipeline orchestrator — run this to start |
+| `/sites` | Extract facility locations for a single company |
+| `/mapping` | Match people to locations and build the capped list |
 
 ## Installation
 
@@ -31,6 +98,28 @@ claude
 ```
 
 Skills auto-load from the repo's `.claude/commands/` directory.
+
+## Output Files
+
+All output is saved to `~/sitemapping/<campaign-name>/`:
+
+| File | Description |
+|------|-------------|
+| `account locations/*.csv` | Facility locations per account |
+| `People List.csv` | Raw enriched people from Clay |
+| `People List - Enriched.csv` | People with matched location columns |
+| `People List - Matched Leads (New).csv` | Only people near a known facility |
+| `People List - Matched Leads (New) - Capped.csv` | Final list, capped per location |
+
+## Resuming
+
+Long campaigns can be resumed across sessions:
+
+```
+/sitemapping --resume <campaign-id>
+```
+
+The pipeline picks up where it left off — skipping accounts that already have location CSVs and checking Clay enrichment status.
 
 ## Requirements
 
