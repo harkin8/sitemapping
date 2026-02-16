@@ -45,7 +45,7 @@ Use AskUserQuestion: "What should we name this campaign?" Suggest a default base
 ### Step 4: Verify API
 
 1. `curl -s $PIPELINE_API_URL/health` — if it fails, stop and tell the user.
-2. Create campaign directory: `~/pipeline/<campaign-name>/account locations/`
+2. Create campaign directory: `~/sitemapping/<campaign-name>/account locations/`
 
 ---
 
@@ -77,7 +77,7 @@ This file contains the complete methodology: scenario definitions (A/B/C/D), the
 
 Process each account one at a time, in order. For each account:
 
-1. **Check if already done** — look for `~/pipeline/<campaign-name>/account locations/<account-name-slug>-locations.csv`. If it exists, say "Already have locations for <account>. Skipping." and move to the next.
+1. **Check if already done** — look for `~/sitemapping/<campaign-name>/account locations/<account-name-slug>-locations.csv`. If it exists, say "Already have locations for <account>. Skipping." and move to the next.
 
 2. **Announce the current account** — say:
    ```
@@ -89,7 +89,7 @@ Process each account one at a time, in order. For each account:
    - Research & classify into Scenario A, B, C, or D (Step 1 of /sites)
    - **Tell the user which scenario applies** (Step 2 of /sites)
    - Extract locations using the scenario-specific method (Serper Places API for C/D, scraping for B, direct extraction for A)
-   - Save CSV to `~/pipeline/<campaign-name>/account locations/<account-name-slug>-locations.csv` using the full CSV format from /sites Step 4
+   - Save CSV to `~/sitemapping/<campaign-name>/account locations/<account-name-slug>-locations.csv` using the full CSV format from /sites Step 4
 
 4. **After saving**, announce completion:
    ```
@@ -111,7 +111,7 @@ Process each account one at a time, in order. For each account:
 
 After the queue is complete, list all location CSVs:
 ```bash
-ls ~/pipeline/<campaign-name>/account locations/
+ls ~/sitemapping/<campaign-name>/account locations/
 ```
 
 Report: "All X accounts processed. Y location CSVs created."
@@ -161,7 +161,7 @@ Download the enriched people as CSV:
 
 ```bash
 curl -s "https://pipeline-api-production-a54c.up.railway.app/campaigns/<campaign-id>/export" \
-  -o "$HOME/pipeline/<campaign-name>/People List.csv"
+  -o "$HOME/sitemapping/<campaign-name>/People List.csv"
 ```
 
 ### 4a. Show enrichment summary
@@ -215,8 +215,8 @@ Store these preferences for Phase 5.
 ## Phase 5: Run /mapping
 
 The /mapping skill expects:
-1. **People List CSV** at `~/pipeline/<campaign-name>/People List.csv`
-2. **Location CSVs** at `~/pipeline/<campaign-name>/account locations/`
+1. **People List CSV** at `~/sitemapping/<campaign-name>/People List.csv`
+2. **Location CSVs** at `~/sitemapping/<campaign-name>/account locations/`
 
 Tell the user: "Running mapping pipeline now."
 
@@ -232,7 +232,7 @@ Execute the /mapping logic inline with the user's preferences from Phase 4c:
     - **Both:** Filter Director+ first, sort by persona score. Backfill from non-Director (sorted by score) if under the cap.
     - **No priority:** Take first N rows per location as-is.
 
-All output files go to `~/pipeline/<campaign-name>/`.
+All output files go to `~/sitemapping/<campaign-name>/`.
 
 ---
 
@@ -248,11 +248,11 @@ Matched to sites: Z
 Capped leads:     W (capped at <N>/location)
 
 Output files:
-  ~/pipeline/<campaign-name>/People List.csv
-  ~/pipeline/<campaign-name>/People List - Enriched.csv
-  ~/pipeline/<campaign-name>/People List - Matched Leads (New).csv
-  ~/pipeline/<campaign-name>/People List - Matched Leads (New) - Capped.csv
-  ~/pipeline/<campaign-name>/account locations/*.csv
+  ~/sitemapping/<campaign-name>/People List.csv
+  ~/sitemapping/<campaign-name>/People List - Enriched.csv
+  ~/sitemapping/<campaign-name>/People List - Matched Leads (New).csv
+  ~/sitemapping/<campaign-name>/People List - Matched Leads (New) - Capped.csv
+  ~/sitemapping/<campaign-name>/account locations/*.csv
 
 Resume command: /sitemapping --resume <campaign-id>
 ```
