@@ -1,6 +1,6 @@
 # Sitemapping
 
-End-to-end account targeting pipeline for Claude Code. Takes a list of target accounts, finds their manufacturing facility locations, enriches people via Clay, matches people to nearby facilities, and outputs a capped lead list ready for outreach.
+End-to-end account targeting pipeline for Claude Code. Takes a target account (or a batch via CSV), finds their manufacturing facility locations, enriches people via Clay, matches people to nearby facilities, and outputs a capped lead list ready for outreach.
 
 ![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-blue) ![License](https://img.shields.io/badge/License-Private-gray)
 
@@ -9,9 +9,13 @@ End-to-end account targeting pipeline for Claude Code. Takes a list of target ac
 The pipeline runs in 5 phases, fully orchestrated by Claude Code:
 
 ```
-Accounts CSV
-    │
-    ▼
+Single account ──► /sitemapping (interactive, you see every step)
+                        │
+Multiple accounts ──► sitemapping-agent (batch, runs in background)
+                        │
+                   (both follow the same phases below)
+                        │
+                        ▼
 Phase 1: Extract Locations
     Claude researches each account's manufacturing/production
     facilities using web search, company websites, and Google
@@ -71,13 +75,25 @@ Locations with more people than the cap are trimmed using seniority priority:
 
 Within each tier, leads are ranked by persona relevance score.
 
-## Skills
+## Skills & Agents
+
+### Slash Commands (interactive)
 
 | Skill | Description |
 |-------|-------------|
-| `/sitemapping` | Full pipeline orchestrator — run this to start |
+| `/sitemapping` | Full pipeline for a **single account** — interactive, step-by-step |
 | `/sites` | Extract facility locations for a single company |
 | `/mapping` | Match people to locations and build the capped list |
+
+### Agents (background)
+
+| Agent | Description |
+|-------|-------------|
+| `sitemapping-agent` | Full pipeline for **multiple accounts** via CSV — runs in background, returns results when done |
+
+**When to use which:**
+- One account → `/sitemapping` (you watch it run, can interject)
+- Multiple accounts → ask Claude to run the `sitemapping-agent` (batch mode, non-blocking)
 
 ## Installation
 
@@ -97,7 +113,7 @@ cd sitemapping
 claude
 ```
 
-Skills auto-load from the repo's `.claude/commands/` directory.
+Skills auto-load from `.claude/commands/` and the agent auto-loads from `.claude/agents/` — no extra setup needed. Run `git pull` to get updates.
 
 ## Output Files
 
