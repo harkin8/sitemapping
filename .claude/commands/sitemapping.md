@@ -259,6 +259,16 @@ Resume command: /sitemapping --resume <campaign-id>
 
 ---
 
+## Phase 6: Send to Clay
+
+After printing the final summary, ask the user:
+
+Use AskUserQuestion: **"Would you like to send the leads to Clay now?"**
+- **"Yes, send now"** — load the `/send` skill methodology (read `~/.claude/commands/send.md`) and execute it in the context of this campaign's output folder. Pass the campaign folder path so Phase 0 of `/send` resolves the file automatically.
+- **"No, I'll do it later"** — print: `"You can send anytime by running /send from the campaign folder."`
+
+---
+
 ## Resume Mode
 
 When `--resume <campaign-id>` is provided:
