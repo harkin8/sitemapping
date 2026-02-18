@@ -18,14 +18,9 @@ Orchestrate the full flow: accounts → facility locations → Clay enrichment �
 
 ## Phase 0: Intake
 
-### Step 1: Ask how many accounts
+> **Note:** `/sitemapping` is for single accounts. For multiple accounts (CSV batch), ask Harkin to use the sitemapping-agent instead.
 
-Use AskUserQuestion:
-- **"How many accounts do you want to map?"**
-  - **1 account** — "I'll enter the details manually"
-  - **Multiple accounts** — "I'll upload a CSV"
-
-### Step 2a: Single account (if 1)
+### Step 1: Ask for account details
 
 Ask the user to provide:
 - **Account Name** (e.g., "Ford Motor Company")
@@ -34,11 +29,7 @@ Ask the user to provide:
 
 Store as a single-item account list.
 
-### Step 2b: Multiple accounts (if CSV)
-
-Ask the user to provide the path to their CSV. Read it — expect columns: `Account Name`, `Domain` (or `Company Domain`), `Account ID`. Parse all rows.
-
-### Step 3: Ask for campaign name
+### Step 2: Ask for campaign name
 
 Use AskUserQuestion: "What should we name this campaign?" Suggest a default based on the account name (single) or CSV filename (multiple). This is just for organizing the output folder.
 
@@ -263,7 +254,7 @@ Resume command: /sitemapping --resume <campaign-id>
 
 After printing the final summary, ask the user:
 
-Use AskUserQuestion: **"Would you like to send the leads to Clay now?"**
+Use AskUserQuestion: **"Ready to send to Clay for SFDC logging?"**
 - **"Yes, send now"** — load the `/send` skill methodology (read `~/.claude/commands/send.md`) and execute it in the context of this campaign's output folder. Pass the campaign folder path so Phase 0 of `/send` resolves the file automatically.
 - **"No, I'll do it later"** — print: `"You can send anytime by running /send from the campaign folder."`
 
