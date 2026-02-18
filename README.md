@@ -44,6 +44,12 @@ Phase 5: Match & Cap
     │
     ▼
  Capped List (final output)
+    │
+    ▼
+Phase 6: Send to Clay
+    Pushes each lead row to Clay via webhook. Clay enriches
+    with work email + phone (Surfe/Kaspr) and pushes to
+    Salesforce. Rate-limited at 8 req/s with auto-retry.
 ```
 
 ### Location Extraction (`/sites`)
@@ -84,6 +90,7 @@ Within each tier, leads are ranked by persona relevance score.
 | `/sitemapping` | Full pipeline for a **single account** — interactive, step-by-step |
 | `/sites` | Extract facility locations for a single company |
 | `/mapping` | Match people to locations and build the capped list |
+| `/send` | Push the final capped leads CSV to Clay for email/phone enrichment and Salesforce push |
 
 ### Agents (background)
 
