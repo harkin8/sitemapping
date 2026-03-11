@@ -1,6 +1,6 @@
 ---
 description: End-to-end account targeting pipeline — from accounts to Capped List
-allowed-tools: Read, Write, Bash, WebSearch, WebFetch, Glob, Grep, AskUserQuestion
+allowed-tools: Read, Write, Bash, WebSearch, WebFetch, Glob, Grep, AskUserQuestion, Agent
 ---
 
 # End-to-End Account Targeting Pipeline
@@ -18,11 +18,21 @@ Orchestrate the full flow: accounts → facility locations → Clay enrichment �
 
 ## Phase 0: Intake
 
-> **Note:** `/sitemapping` is for single accounts. For multiple accounts (CSV batch), ask Harkin to use the sitemapping-agent instead.
+### Step 0: Detect batch vs. single account
+
+If `$ARGUMENTS` contains a file path ending in `.csv` (or the user's message references a CSV file):
+
+1. **Read the CSV** to count the number of accounts.
+2. If it contains **2 or more accounts**, immediately launch the sitemapping-agent using the `Agent` tool:
+   ```
+   Agent(subagent_type="sitemapping-agent", prompt="Process this CSV batch: <file-path>. User's original message: <user-message>")
+   ```
+   Then stop — do not proceed with the single-account flow below.
+3. If it contains exactly **1 account**, extract the account details from that row and skip Step 1 below.
 
 ### Step 1: Ask for account details
 
-Ask the user to provide:
+If no CSV was provided, ask the user for:
 - **Account Name** (e.g., "Ford Motor Company")
 - **Company Domain** (e.g., "ford.com")
 - **Account ID** (e.g., "001Ua00000MMNe4IAH")
